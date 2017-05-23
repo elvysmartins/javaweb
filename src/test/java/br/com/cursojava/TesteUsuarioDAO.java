@@ -12,7 +12,8 @@ public class TesteUsuarioDAO {
 		//testeExcluir();
 		//testeSalvar();
 		//testeBuscarPorId();
-		testeBuscarTodos();
+		//testeBuscarTodos();
+		testeAutenticar();
 	}
 
 	private static void testeCadastrar() {
@@ -75,6 +76,17 @@ public class TesteUsuarioDAO {
 		System.out.println("Salvo com sucesso!");		
 		
 	}
+
+	private static void testeBuscarPorId() {
+		UsuarioDAO usuarioDAO = new UsuarioDAO();
+		Usuario usuario = usuarioDAO.buscarPorId(6);
+		if  (usuario != null){
+			System.out.println(usuario);	
+		} else{
+			System.out.println("Id não encontrado");
+		}
+		
+	}
 	
 	private static void testeBuscarTodos() {
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
@@ -93,23 +105,20 @@ public class TesteUsuarioDAO {
 	}	
 	
 	private static void testeAutenticar () {
+		UsuarioDAO usuarioDAO = new UsuarioDAO();
+		
 		Usuario usuario = new Usuario();
 		usuario.setLogin("elvynho");
 		usuario.setSenha("123");
 		
-		UsuarioDAO usuarioDAO = new UsuarioDAO();
-    	System.out.println(usuarioDAO.autenticar(usuario));
-	}
+		Usuario usuRetorno = usuarioDAO.autenticar(usuario);
 
-	private static void testeBuscarPorId() {
-		UsuarioDAO usuarioDAO = new UsuarioDAO();
-		Usuario usuario = usuarioDAO.buscarPorId(6);
-		if  (usuario != null){
-			System.out.println(usuario);	
+		if  (usuRetorno==null){
+			System.out.println("Usuário não encontrado!!!");
 		} else{
-			System.out.println("Id não encontrado");
+			System.out.println(usuRetorno);
+			System.out.println("Autenticação com sucesso!!!");
 		}
-		
 	}
-
+	
 }

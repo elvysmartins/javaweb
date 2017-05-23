@@ -72,6 +72,35 @@ public class UsuarioDAO {
 			cadastrar(usu);
 		}
 	}
+
+	public Usuario buscarPorId (Integer id){
+		
+		String sql = "Select * from BancoJavaWeb.usuario where id=?";
+		Usuario usuario = null;
+
+		try {
+			PreparedStatement preparador = (PreparedStatement) con.prepareStatement(sql);
+            preparador.setInt(1, id);
+            ResultSet resultado = preparador.executeQuery();
+
+            if (resultado.next()){
+            	usuario = new Usuario();
+    			usuario.setId(resultado.getInt("id"));
+    			usuario.setNome(resultado.getString("nome"));
+    			usuario.setLogin(resultado.getString("login"));
+    			usuario.setSenha(resultado.getString("senha"));            
+            }
+            
+            preparador.close();
+
+        } catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+        return usuario;
+        
+	}	
 	
 	public List<Usuario> buscarTodos(){
 		
@@ -101,35 +130,35 @@ public class UsuarioDAO {
 		return lista;	
 	}
 
-	public Usuario buscarPorId (Integer id){
-		
-		String sql = "Select * from BancoJavaWeb.usuario where id=?";
-		Usuario usuario = null;
-
+	/**
+	 * Busca login e senha do usuário
+	 * @param usuario - Objeto com login e senha a ser consultado
+	 * @return null quando não encontra no banco ou um ponteiro a um usuário quando encontra
+	 */
+	public Usuario autenticar (Usuario usuario){
+		String sql = "Select * from BancoJavaWeb.usuario where login=? and senha =md5(?)";
+		Usuario usuarioRetorno = null;
 		try {
-			PreparedStatement preparador = (PreparedStatement) con.prepareStatement(sql);
-            preparador.setInt(1, id);
+			java.sql.PreparedStatement preparador = con.prepareStatement(sql);
+            preparador.setString(1, usuario.getLogin());
+            preparador.setString(2, usuario.getSenha());
             ResultSet resultado = preparador.executeQuery();
 
             if (resultado.next()){
-            	usuario = new Usuario();
-    			usuario.setId(resultado.getInt("id"));
-    			usuario.setNome(resultado.getString("nome"));
-    			usuario.setLogin(resultado.getString("login"));
-    			usuario.setSenha(resultado.getString("senha"));            
-            }
-            
+            	usuarioRetorno = new Usuario();
+            	usuarioRetorno.setId(resultado.getInt("id"));
+            	usuarioRetorno.setNome(resultado.getString("nome"));
+            	usuarioRetorno.setLogin(resultado.getString("login"));
+            	usuarioRetorno.setSenha(resultado.getString("senha"));            
+            } 
             preparador.close();
-
         } catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-        return usuario;
-        
+        return usuarioRetorno;
 	}
-
+	
 	public List<Usuario> buscarPorNome (String nome){
 		
 		String sql = "Select * from BancoJavaWeb.usuario where nome like ?";
@@ -149,7 +178,7 @@ public class UsuarioDAO {
     			lista.add(usuario);
             }
             preparador.close();
-            System.out.println("Consulta por Nome com sucesso!!!");
+            //System.out.println("Consulta por Nome com sucesso!!!");
         } catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -157,62 +186,5 @@ public class UsuarioDAO {
         return lista;
         
 	}
-
-	/**
-	 * Busca login e senha do usuário
-	 * @param usuario - Objeto com login e senha a ser consultado
-	 * @return null quando não encontra no banco ou um ponteiro a um usuário quando encontra
-	 */
-	public Usuario autenticar (Usuario usuario){
-		
-		String sql = "Select * from BancoJavaWeb.usuario where login=? and senha =?";
-		Usuario usuarioRetorno = null;
-
-		try {
-			java.sql.PreparedStatement preparador = con.prepareStatement(sql);
-            preparador.setString(1, usuario.getLogin());
-            preparador.setString(2, usuario.getSenha());
-            ResultSet resultado = preparador.executeQuery();
-
-            if (resultado.next()){
-            	usuarioRetorno = new Usuario();
-            	usuarioRetorno.setId(resultado.getInt("id"));
-            	usuarioRetorno.setNome(resultado.getString("nome"));
-            	usuarioRetorno.setLogin(resultado.getString("login"));
-            	usuarioRetorno.setSenha(resultado.getString("senha"));            
-                System.out.println("Autenticação com sucesso!!!");
-            } else{
-            	System.out.println("Usuário não encontrado!!!");
-            }
-            
-            preparador.close();
-
-        } catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-        return usuarioRetorno;
-        
-	}
-
-	public Boolean existeUsuario (Usuario usuario){
-		
-		String sql = "Select * from BancoJavaWeb.usuario where login=? and senha =?";
-		boolean ret = false;
-
-		try {
-			java.sql.PreparedStatement preparador = con.prepareStatement(sql);
-            preparador.setString(1, usuario.getLogin());
-            preparador.setString(2, usuario.getSenha());
-            ResultSet resultado = preparador.executeQuery();
-            ret = resultado.next();
-            preparador.close();
-        } catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-        return ret;
-        
-	}
+	
 }
